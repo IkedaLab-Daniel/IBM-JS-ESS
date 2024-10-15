@@ -21,7 +21,7 @@ const showResult = (name, img, info) => {
   }
   result.innerHTML = `
     <h2 class="title">${name}</h2>
-    <img class="search-img" src=${img} alt="sofia">
+    <img class="search-img" src=${img} alt="image">
     <p class="description">${info}</p>
   `;
 };
@@ -43,6 +43,7 @@ const searchError = () => {
   result.innerHTML = `<p class="notfound">Sorry we can't find your search</p>`;
 };
 
+// Fetch data from the JSON file
 fetch("travelrecommendation.json")
   .then((res) => res.json())
   .then((data) => {
@@ -50,8 +51,9 @@ fetch("travelrecommendation.json")
       let searchQuery = query.value.toLowerCase();
       let notfound = true;
 
-      data.countries.map((country) => {
-        country.cities.map((city) => {
+      // Search for cities in countries
+      data.countries.forEach((country) => {
+        country.cities.forEach((city) => {
           if (city.name.toLowerCase().includes(searchQuery)) {
             showResult(city.name, city.imageUrl, city.description);
             notfound = false;
@@ -59,24 +61,31 @@ fetch("travelrecommendation.json")
         });
       });
 
-      data.temples.map((temple) => {
+      // Search for temples
+      data.temples.forEach((temple) => {
         if (temple.name.toLowerCase().includes(searchQuery)) {
           showResult(temple.name, temple.imageUrl, temple.description);
           notfound = false;
         }
       });
 
-      data.beaches.map((beach) => {
+      // Search for beaches
+      data.beaches.forEach((beach) => {
         if (beach.name.toLowerCase().includes(searchQuery)) {
           showResult(beach.name, beach.imageUrl, beach.description);
           notfound = false;
         }
       });
 
+      // If nothing found, show error message
       if (notfound) {
         searchError();
       }
     };
 
+    // Trigger search on button click
     searchbtn.addEventListener("click", search);
+  })
+  .catch((error) => {
+    console.error("Error fetching data:", error);
   });
